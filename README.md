@@ -95,3 +95,29 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+## Environment Setup (dotenv)
+
+- Library: `react-native-config` sudah terpasang.
+- File env: `.env`, `.env.development`, `.env.staging`, `.env.production` di root `baseapp`.
+- Akses variabel di JS: `import Config from 'react-native-config'` atau via wrapper `src/config/env.ts`.
+
+### Android
+- Gradle sudah memuat `dotenv.gradle`.
+- Jalankan dengan env tertentu:
+  - `ENVFILE=.env.staging npm run android`
+  - atau `ENVFILE=.env.production ./android/gradlew assembleRelease`
+
+### iOS
+- Autolink Pod akan memuat `react-native-config`.
+- Jalankan dengan env tertentu:
+  - `ENVFILE=.env.staging npm run ios`
+  - Atau set Environment Variables `ENVFILE` di Xcode Scheme (Run).
+
+### Contoh penggunaan
+- Wrapper: `src/config/env.ts` memberikan `ENV`, `API_URL`, `APP_NAME` berjenis aman.
+- API util: `src/utils/api.ts` memakai `env.API_URL` sebagai `baseURL` untuk `axios`.
+
+### Catatan
+- Default akan memakai `.env` bila `ENVFILE` tidak ditentukan.
+- Pastikan tidak meng-commit data rahasia; gunakan `.env.example` sebagai referensi.
