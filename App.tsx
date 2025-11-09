@@ -10,12 +10,17 @@ import {
   Text,
   Button,
   TextInput,
+  ActivityIndicator,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useCounter } from './src/store/useCounter';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from './src/store/useAuth';
+import LoginScreen from './src/screens/Login';
+import ProfileScreen from './src/screens/Profile';
+import ToastHost from './src/components/ToastHost';
 
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -123,19 +128,33 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
-          const iconName = route.name === 'Home' ? 'home' : 'form-textbox';
+          const iconName = route.name === 'Home' ? 'home' : 'account';
           return <Icon name={iconName} color={color} size={size} />;
         },
       })}
     >
       <Tabs.Screen name="Home" component={HomeScreen} />
-      <Tabs.Screen name="Form" component={FormScreen} />
+      <Tabs.Screen name="Profile" component={ProfileScreen} />
     </Tabs.Navigator>
   );
 }
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const { hydrate, hydrated, isAuthenticated } = useAuth();
+
+  React.useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+
+  function Splash() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator />
+        <Text style={{ marginTop: 8 }}>Memuat...</Text>
+      </View>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -143,14 +162,25 @@ function App() {
         <PaperProvider>
           <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
           <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen
-                name="Root"
-                component={TabNavigator}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
+            {hydrated ? (
+              isAuthenticated ? (
+                <Stack.Navigator>
+                  <Stack.Screen
+                    name="Root"
+                    component={TabNavigator}
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Navigator>
+              ) : (
+                <Stack.Navigator>
+                  <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Masuk' }} />
+                </Stack.Navigator>
+              )
+            ) : (
+              <Splash />
+            )}
           </NavigationContainer>
+          <ToastHost />
         </PaperProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

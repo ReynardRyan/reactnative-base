@@ -121,3 +121,40 @@ To learn more about React Native, take a look at the following resources:
 ### Catatan
 - Default akan memakai `.env` bila `ENVFILE` tidak ditentukan.
 - Pastikan tidak meng-commit data rahasia; gunakan `.env.example` sebagai referensi.
+
+---
+
+## API Layer (Axios)
+
+Sumber utama:
+- Instance: `src/api/http.ts` (baseURL, timeout, headers, interceptors)
+- Helper: `src/api/client.ts` (`get`, `post`, `put`, `patch`, `del`)
+- Token: `src/api/auth.ts` (cache di memory + AsyncStorage)
+
+### Cara pakai
+
+```ts
+import client from '@/api/client';
+
+// GET dengan query params
+const users = await client.get<User[]>('/users', { page: 1 });
+
+// POST dengan body dan tipe balikan
+const created = await client.post<User, CreateUserBody>('/users', { name: 'John' });
+```
+
+### Mengatur token
+```ts
+import { setToken } from '@/api/auth';
+await setToken('your-jwt-token'); // Authorization: Bearer <token>
+```
+- Interceptor otomatis menambahkan header `Authorization` bila token tersedia.
+- Status `401` akan menghapus token (panggil ulang login sesuai kebutuhan).
+
+### Penanganan error
+- Error dinormalisasi di interceptor: `{ message, status, code, details, url, method }`.
+- Tangani dengan `try/catch` di pemanggil.
+
+### Catatan best practice
+- Pastikan `env.API_URL` di `.env` sesuai environment.
+- Gunakan helper `client` untuk konsistensi; hindari memanggil `axios` langsung.
