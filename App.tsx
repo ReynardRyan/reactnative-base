@@ -7,10 +7,18 @@ import {
   Provider as PaperProvider,
   Text,
   ActivityIndicator,
+  MD3LightTheme,
 } from 'react-native-paper';
 import { useAuth } from './src/store/useAuth';
 import RootNavigator from './src/navigation/RootNavigator';
-// import ToastHost from './src/components/ToastHost';
+import Toast from 'react-native-toast-message';
+import { Root as PopupRootProvider } from '@sekizlipenguen/react-native-popup-confirm-toast';
+import { GlobalLoading } from './src/components/Loading';
+
+const theme = {
+  ...MD3LightTheme,
+  fonts: MD3LightTheme.fonts,
+};
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -30,17 +38,22 @@ function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <PaperProvider>
-          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-          <NavigationContainer>
-            {hydrated ? <RootNavigator /> : <Splash />}
-          </NavigationContainer>
-          {/* <ToastHost /> */}
-        </PaperProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <PopupRootProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <PaperProvider theme={theme}>
+            <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+            <NavigationContainer>
+              {hydrated ? <RootNavigator /> : <Splash />}
+            </NavigationContainer>
+            {/* Global Loading Overlay */}
+            <GlobalLoading />
+            {/* Global Toast Host */}
+            <Toast />
+          </PaperProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </PopupRootProvider>
   );
 }
 

@@ -11,10 +11,12 @@ import {
 } from '../api/endpoints/auth';
 import { useAuth } from '../store/useAuth';
 import { useNavigation } from '@react-navigation/native';
+import { toastSuccess, toastError } from '../components/toast';
+import { showPopupMessage } from '../components/popup';
 
 const schema = z.object({
   username: z.string({ message: 'Username tidak valid' }),
-  password: z.string().min(5, { message: 'Minimal 6 karakter' }),
+  password: z.string().min(5, { message: 'Minimal 5 karakter' }),
 });
 
 type LoginValues = z.infer<typeof schema>;
@@ -41,16 +43,15 @@ export default function LoginScreen() {
     setLoading(true);
     setError(null);
     try {
-      console.log('test');
-
       const res = await loginApi(values as LoginBody);
-      console.log(res);
-
       await login(res.token);
+      toastSuccess('Login berhasil');
       // Redirect ke Home (Tab Root)
       navigation.reset({ index: 0, routes: [{ name: 'Root' }] });
     } catch (e: any) {
-      setError(e?.message ?? 'Login gagal');
+      const msg = e?.message ?? 'Login gagal';
+      setError(msg);
+      showPopupMessage('Gagal Masuk', msg, 'danger', 'Tutup');
     } finally {
       setLoading(false);
     }
@@ -58,8 +59,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text variant="headlineSmall">Masuk</Text>
-
+      <Text variant="headlineMedium">Masuk</Text>
       <Controller
         control={control}
         name="username"
@@ -72,14 +72,12 @@ export default function LoginScreen() {
             autoCapitalize="none"
             error={!!errors.username}
             mode="outlined"
-            style={styles.input}
           />
         )}
       />
       {errors.username && (
-        <Text style={styles.error}>{errors.username.message}</Text>
+        <Text style={styles.errorText}>{errors.username.message}</Text>
       )}
-
       <Controller
         control={control}
         name="password"
@@ -90,33 +88,37 @@ export default function LoginScreen() {
             onBlur={onBlur}
             onChangeText={onChange}
             secureTextEntry
+            style={styles.input}
             error={!!errors.password}
             mode="outlined"
-            style={styles.input}
           />
         )}
       />
       {errors.password && (
-        <Text style={styles.error}>{errors.password.message}</Text>
+        <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
-
-      {error && <Text style={styles.error}>{error}</Text>}
-
       <Button
         mode="contained"
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
+        style={{ marginTop: 12 }}
       >
         {loading ? 'Memproses...' : 'Masuk'}
       </Button>
-
-      {loading && <ActivityIndicator style={{ marginTop: 12 }} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 16 },
-  input: { marginTop: 8 },
-  error: { color: 'red' },
+  container: {
+    flex: 1,
+    padding: 16,
+    gap: 12,
+  },
+  input: {
+    marginTop: 8,
+  },
+  errorText: {
+    color: 'red',
+  },
 });
