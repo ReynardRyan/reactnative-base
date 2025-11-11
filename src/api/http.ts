@@ -12,7 +12,7 @@ export const http = axios.create({
 });
 
 // Request interceptor: attach Authorization and content-type
-http.interceptors.request.use(async (config) => {
+http.interceptors.request.use(async config => {
   const token = await getToken();
 
   const headersAny = config.headers as any;
@@ -48,7 +48,7 @@ http.interceptors.request.use(async (config) => {
 
 // Response interceptor: normalize errors and handle 401
 http.interceptors.response.use(
-  (response) => response,
+  response => response,
   async (error: AxiosError) => {
     // On unauthorized, clear token (app can navigate to login upon rejection)
     const status = error.response?.status;
@@ -69,7 +69,7 @@ http.interceptors.response.use(
       method: error.config?.method,
     } as const;
     return Promise.reject(normalized);
-  }
+  },
 );
 
 export default http;

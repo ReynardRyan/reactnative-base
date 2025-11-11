@@ -8,7 +8,7 @@ export type AppEnv = {
 
 const env: AppEnv = {
   ENV: (Config.ENV as AppEnv['ENV']) ?? 'development',
-  API_URL: Config.API_URL,
+  API_URL: 'http://36.88.32.238:1337/api/v1',
   APP_NAME: Config.APP_NAME,
 };
 

@@ -1,7 +1,7 @@
 import client from '../client';
 
 export type LoginBody = {
-  email: string;
+  username: string;
   password: string;
 };
 

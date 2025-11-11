@@ -4,13 +4,17 @@ import { Text, TextInput, Button, ActivityIndicator } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { login as loginApi, type LoginResponse, type LoginBody } from '../api/endpoints/auth';
+import {
+  login as loginApi,
+  type LoginResponse,
+  type LoginBody,
+} from '../api/endpoints/auth';
 import { useAuth } from '../store/useAuth';
 import { useNavigation } from '@react-navigation/native';
 
 const schema = z.object({
-  email: z.string().email({ message: 'Email tidak valid' }),
-  password: z.string().min(6, { message: 'Minimal 6 karakter' }),
+  username: z.string({ message: 'Username tidak valid' }),
+  password: z.string().min(5, { message: 'Minimal 6 karakter' }),
 });
 
 type LoginValues = z.infer<typeof schema>;
@@ -20,9 +24,13 @@ type LoginResponse = {
 };
 
 export default function LoginScreen() {
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { username: '', password: '' },
   });
   const navigation = useNavigation<any>();
   const { login } = useAuth();
@@ -33,7 +41,11 @@ export default function LoginScreen() {
     setLoading(true);
     setError(null);
     try {
+      console.log('test');
+
       const res = await loginApi(values as LoginBody);
+      console.log(res);
+
       await login(res.token);
       // Redirect ke Home (Tab Root)
       navigation.reset({ index: 0, routes: [{ name: 'Root' }] });
@@ -50,22 +62,23 @@ export default function LoginScreen() {
 
       <Controller
         control={control}
-        name="email"
+        name="username"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Email"
+            label="Username"
             value={value}
             onBlur={onBlur}
             onChangeText={onChange}
             autoCapitalize="none"
-            keyboardType="email-address"
-            error={!!errors.email}
+            error={!!errors.username}
             mode="outlined"
             style={styles.input}
           />
         )}
       />
-      {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+      {errors.username && (
+        <Text style={styles.error}>{errors.username.message}</Text>
+      )}
 
       <Controller
         control={control}
@@ -83,11 +96,17 @@ export default function LoginScreen() {
           />
         )}
       />
-      {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
+      {errors.password && (
+        <Text style={styles.error}>{errors.password.message}</Text>
+      )}
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <Button mode="contained" onPress={handleSubmit(onSubmit)} disabled={loading}>
+      <Button
+        mode="contained"
+        onPress={handleSubmit(onSubmit)}
+        disabled={loading}
+      >
         {loading ? 'Memproses...' : 'Masuk'}
       </Button>
 
