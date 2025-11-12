@@ -12,10 +12,10 @@ export default function AppTabs() {
     <Tabs.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color, size }) => {
           const iconName = route.name === 'Home' ? 'home' : 'account';
-          return <Icon name={iconName} color={color} size={size} />;
-        },
+            return <Icon name={iconName} color={color} size={size} />;
+          },
       })}
     >
       <Tabs.Screen name="Home" component={HomeScreen} />

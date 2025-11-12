@@ -1,0 +1,14 @@
+import Logo from './logo_clean.png';
+export { Logo };
+export const Meter = require('./meter.png');
+export const User = require('./user.png');
+export const Bacameter = require('./bacameter.png');
+export const Logo2 = require('./logo_avo.png');
+export const Logo3 = require('./logo_avo_edit.png');
+export const LogoDigi = require('./logo_digi.png');
+export const NoImage = require('./noimage.jpg');
+export const LogoDigiPDAM = require('./LogoDigiPDAM.png');
+export const LogoDigiPDAMWhite = require('./LogoDigiPDAM-white.png');
+export const BackgroundImg = require('./bg.png');
+export {default as CalendarCheck} from './calendar_check.svg';
+export {default as CalendarUnCheck} from './calendar_uncheck.svg';

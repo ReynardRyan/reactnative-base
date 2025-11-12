@@ -76,7 +76,7 @@ export function Loading({
   message,
   spinnerType = 'CircleFade',
   size = 48,
-  color = '#000',
+  color = colors.primary,
   overlayColor = 'rgba(0,0,0,0.25)',
   dismissOnPress = false,
   onDismiss,
@@ -102,6 +102,7 @@ export function Loading({
 
 // Global binding with Zustand store
 import { useUI } from '../store/useUI';
+import colors from '../constants/colors';
 export function GlobalLoading() {
   const { globalLoading } = useUI();
   return <Loading visible={globalLoading} message="Memuat..." spinnerType="Chase" />;

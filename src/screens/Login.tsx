@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text, TextInput, Button, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, ImageBackground, Image, Platform, KeyboardAvoidingView } from 'react-native';
+import { Text, TextInput, Button } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +13,13 @@ import { useAuth } from '../store/useAuth';
 import { useNavigation } from '@react-navigation/native';
 import { toastSuccess, toastError } from '../components/toast';
 import { showPopupMessage } from '../components/popup';
+import { BackgroundImg, Logo2 } from '../assets/images';
+import { wp, hp } from '../utils/responsive';
+import { LogoDigiPDAM } from '../assets/images';
+import Gap from '../components/Gap';
+import colors from '../constants/colors';
+import AppButton from '../components/AppButton';
+import { Flow } from 'react-native-animated-spinkit';
 
 const schema = z.object({
   username: z.string({ message: 'Username tidak valid' }),
@@ -21,9 +28,6 @@ const schema = z.object({
 
 type LoginValues = z.infer<typeof schema>;
 
-type LoginResponse = {
-  token: string;
-};
 
 export default function LoginScreen() {
   const {
@@ -38,6 +42,7 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [seePassword, setSeePassword] = React.useState(false);
 
   const onSubmit = async (values: LoginValues) => {
     setLoading(true);
@@ -58,67 +63,124 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium">Masuk</Text>
-      <Controller
-        control={control}
-        name="username"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Username"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            autoCapitalize="none"
-            error={!!errors.username}
-            mode="outlined"
-          />
-        )}
-      />
-      {errors.username && (
-        <Text style={styles.errorText}>{errors.username.message}</Text>
-      )}
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Password"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            secureTextEntry
-            style={styles.input}
-            error={!!errors.password}
-            mode="outlined"
-          />
-        )}
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
-      <Button
-        mode="contained"
-        onPress={handleSubmit(onSubmit)}
-        disabled={loading}
-        style={{ marginTop: 12 }}
+    <ImageBackground source={BackgroundImg} style={styles.bg}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.formWrapper}
       >
-        {loading ? 'Memproses...' : 'Masuk'}
-      </Button>
-    </View>
+        <View style={styles.form}>
+          <Gap height={hp(4)} />
+          <Image source={Logo2} style={styles.logo} />
+          <Gap height={hp(5)} />
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Username"
+                value={value}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                autoCapitalize="none"
+                error={!!errors.username}
+                mode="outlined"
+                outlineColor={colors.primary}
+                activeOutlineColor={colors.primary}
+                left={
+                  <TextInput.Icon
+                    icon="account"
+                    color={focus => (focus ? colors.primary : undefined)}
+                  />
+                }
+              />
+            )}
+          />
+          {errors.username && (
+            <Text style={styles.errorText}>{errors.username.message}</Text>
+          )}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Password"
+                value={value}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                secureTextEntry={!seePassword}
+                error={!!errors.password}
+                mode="outlined"
+                outlineColor={colors.primary}
+                activeOutlineColor={colors.primary}
+                left={
+                  <TextInput.Icon
+                    icon="lock-open"
+                    color={focus => (focus ? colors.primary : undefined)}
+                  />
+                }
+                right={
+                  <TextInput.Icon
+                    icon={seePassword ? 'eye' : 'eye-off'}
+                    onPress={() => setSeePassword(!seePassword)}
+                  />
+                }
+              />
+            )}
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password.message}</Text>
+          )}
+          // Submit button
+          <AppButton
+            onPress={handleSubmit(onSubmit)}
+            disabled={loading}
+            style={{ marginTop: 12 }}
+          >
+            {loading ? (
+              <>
+                <Flow size={40} color={colors.primary} />
+              </>
+            ) : (
+              <Text style={{ color: colors.white }}>Login</Text>
+            )}
+          </AppButton>
+        </View>
+      </KeyboardAvoidingView>
+      <Image source={LogoDigiPDAM} style={styles.brand} />
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bg: {
     flex: 1,
-    padding: 16,
-    gap: 12,
   },
-  input: {
-    marginTop: 8,
+  formWrapper: {
+    flex: 1,
+    // justifyContent: 'center',
+    alignItems: 'center',
+  },
+  form: {
+    width: '90%',
+    padding: 16,
+    gap: 5,
+  },
+  logo: {
+    width: wp(55),
+    height: wp(55),
+    resizeMode: 'cover',
+    alignSelf: 'center',
   },
   errorText: {
     color: 'red',
+  },
+  brand: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    width: wp(22),
+    height: wp(22),
+    resizeMode: 'contain',
+    opacity: 0.9,
   },
 });
