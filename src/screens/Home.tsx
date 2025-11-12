@@ -4,7 +4,6 @@ import { Text, Button } from 'react-native-paper';
 import { useCounter } from '../store/useCounter';
 import { useUI } from '../store/useUI';
 import Config from 'react-native-config';
-import { requestCameraPermission, requestLocationWhenInUsePermission, requestPhotoLibraryPermission, requestBluetoothPermissions } from '../utils/permissions';
 
 export default function HomeScreen() {
   const { count, increment, decrement, reset } = useCounter();
@@ -34,50 +33,6 @@ export default function HomeScreen() {
         </Button>
         <Button mode="outlined" onPress={reset} style={styles.button}>
           Reset
-        </Button>
-      </View>
-      <View style={styles.row}>
-        <Button
-          mode="outlined"
-          onPress={async () => {
-            const ok = await requestCameraPermission();
-            Alert.alert('Izin Kamera', ok ? 'Diberikan' : 'Ditolak / Diblokir');
-          }}
-          style={styles.button}
-        >
-          Minta izin Kamera
-        </Button>
-        <Button
-          mode="outlined"
-          onPress={async () => {
-            const ok = await requestLocationWhenInUsePermission();
-            Alert.alert('Izin Lokasi', ok ? 'Diberikan' : 'Ditolak / Diblokir');
-          }}
-          style={styles.button}
-        >
-          Minta izin Lokasi
-        </Button>
-      </View>
-      <View style={styles.row}>
-        <Button
-          mode="outlined"
-          onPress={async () => {
-            const ok = await requestPhotoLibraryPermission();
-            Alert.alert('Izin Galeri/Foto', ok ? 'Diberikan' : 'Ditolak / Diblokir');
-          }}
-          style={styles.button}
-        >
-          Minta izin Galeri
-        </Button>
-        <Button
-          mode="outlined"
-          onPress={async () => {
-            const ok = await requestBluetoothPermissions();
-            Alert.alert('Izin Bluetooth', ok ? 'Diberikan' : 'Ditolak / Diblokir');
-          }}
-          style={styles.button}
-        >
-          Minta izin Bluetooth
         </Button>
       </View>
       <View style={styles.row}>

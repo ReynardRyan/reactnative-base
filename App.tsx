@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   Provider as PaperProvider,
@@ -14,6 +14,9 @@ import RootNavigator from './src/navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { Root as PopupRootProvider } from '@sekizlipenguen/react-native-popup-confirm-toast';
 import { GlobalLoading } from './src/components/Loading';
+import colors from './src/constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { requestPhotoLibraryPermission, requestLocationWhenInUsePermission, requestCameraPermission, requestBluetoothPermissions } from './src/utils/permissions';
 
 const theme = {
   ...MD3LightTheme,
@@ -27,6 +30,25 @@ function App() {
   React.useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  // Minta izin Galeri & Bluetooth pada pembukaan pertama
+  React.useEffect(() => {
+    if (!hydrated) return;
+    const key = '@permissions/requested_once';
+    const run = async () => {
+      try {
+        const already = await AsyncStorage.getItem(key);
+        if (!already) {
+          await requestLocationWhenInUsePermission();
+          await requestCameraPermission();
+          await requestPhotoLibraryPermission();
+          // await requestBluetoothPermissions();
+          await AsyncStorage.setItem(key, 'true');
+        }
+      } catch {}
+    };
+    run();
+  }, [hydrated]);
 
   function Splash() {
     return (
@@ -42,7 +64,8 @@ function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <PaperProvider theme={theme}>
-            <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+            <SafeAreaView edges={['top']} style={{ backgroundColor: colors.primary }} />
+            <StatusBar barStyle="light-content" backgroundColor={colors.primary} translucent={false} />
             <NavigationContainer>
               {hydrated ? <RootNavigator /> : <Splash />}
             </NavigationContainer>
