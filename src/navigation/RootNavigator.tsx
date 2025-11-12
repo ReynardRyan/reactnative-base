@@ -6,6 +6,9 @@ import AppTabs from './AppTabs';
 import AuthStack from './AuthStack';
 import type { RootStackParamList } from './types';
 import { useAuth } from '../store/useAuth';
+import colors from '../constants/colors';
+import Header from '../components/Header';
+import DetailScreen from '../screens/Detail';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -28,11 +31,25 @@ export default function RootNavigator() {
   if (!hydrated) return <Splash />;
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+        headerTitleAlign: 'center',
+        headerStyle: {
+          backgroundColor: colors.primary,
+        },
+        headerTintColor: colors.white,
+        animation: 'none',
+        contentStyle: { backgroundColor: 'white' },
+      }}
+    >
       {isAuthenticated ? (
-        <Stack.Screen name="Root" component={AppTabs} />
+        <>
+          <Stack.Screen name="Root" component={AppTabs} options={{ header: () => <Header /> }} />
+          <Stack.Screen name="Detail" component={DetailScreen} />
+        </>
       ) : (
-        <Stack.Screen name="Login" component={AuthStack} />
+        <Stack.Screen name="Login" component={AuthStack} options={{ headerShown: false }} />
       )}
     </Stack.Navigator>
   );
