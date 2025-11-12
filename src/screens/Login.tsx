@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ImageBackground, Image, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, ImageBackground, Image, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -43,6 +43,17 @@ export default function LoginScreen() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [seePassword, setSeePassword] = React.useState(false);
+  const [keyboardOffset, setKeyboardOffset] = React.useState(0);
+
+  React.useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const showSub = Keyboard.addListener('keyboardDidShow', (e) => setKeyboardOffset(e.endCoordinates.height));
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardOffset(0));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const onSubmit = async (values: LoginValues) => {
     setLoading(true);
@@ -146,7 +157,7 @@ export default function LoginScreen() {
           </AppButton>
         </View>
       </KeyboardAvoidingView>
-      <Image source={LogoDigiPDAM} style={styles.brand} />
+      <Image source={LogoDigiPDAM} style={[styles.brand, Platform.OS === 'android' ? { transform: [{ translateY: keyboardOffset }] } : null]} />
     </ImageBackground>
   );
 }
@@ -176,8 +187,8 @@ const styles = StyleSheet.create({
   },
   brand: {
     position: 'absolute',
-    bottom: 16,
-    right: 16,
+    bottom: 1,
+    right: 28,
     width: wp(22),
     height: wp(22),
     resizeMode: 'contain',
