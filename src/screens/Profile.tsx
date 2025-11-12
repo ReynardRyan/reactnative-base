@@ -19,6 +19,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 16 },
+  container: { flex: 1, padding: 16, gap: 16, backgroundColor: 'white' },
   button: { marginTop: 12 },
 });

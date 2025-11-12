@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import { useCounter } from '../store/useCounter';
 import { useUI } from '../store/useUI';
 import Config from 'react-native-config';
+import { requestCameraPermission, requestLocationWhenInUsePermission, requestPhotoLibraryPermission, requestBluetoothPermissions } from '../utils/permissions';
 
 export default function HomeScreen() {
   const { count, increment, decrement, reset } = useCounter();
@@ -36,6 +37,50 @@ export default function HomeScreen() {
         </Button>
       </View>
       <View style={styles.row}>
+        <Button
+          mode="outlined"
+          onPress={async () => {
+            const ok = await requestCameraPermission();
+            Alert.alert('Izin Kamera', ok ? 'Diberikan' : 'Ditolak / Diblokir');
+          }}
+          style={styles.button}
+        >
+          Minta izin Kamera
+        </Button>
+        <Button
+          mode="outlined"
+          onPress={async () => {
+            const ok = await requestLocationWhenInUsePermission();
+            Alert.alert('Izin Lokasi', ok ? 'Diberikan' : 'Ditolak / Diblokir');
+          }}
+          style={styles.button}
+        >
+          Minta izin Lokasi
+        </Button>
+      </View>
+      <View style={styles.row}>
+        <Button
+          mode="outlined"
+          onPress={async () => {
+            const ok = await requestPhotoLibraryPermission();
+            Alert.alert('Izin Galeri/Foto', ok ? 'Diberikan' : 'Ditolak / Diblokir');
+          }}
+          style={styles.button}
+        >
+          Minta izin Galeri
+        </Button>
+        <Button
+          mode="outlined"
+          onPress={async () => {
+            const ok = await requestBluetoothPermissions();
+            Alert.alert('Izin Bluetooth', ok ? 'Diberikan' : 'Ditolak / Diblokir');
+          }}
+          style={styles.button}
+        >
+          Minta izin Bluetooth
+        </Button>
+      </View>
+      <View style={styles.row}>
         <Button mode="contained" onPress={() => showLoadingForSeconds(3)} style={styles.button}>
           Tampilkan Loading 3 detik
         </Button>
@@ -60,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     gap: 16,
+    backgroundColor: 'white',
   },
   row: {
     flexDirection: 'row',

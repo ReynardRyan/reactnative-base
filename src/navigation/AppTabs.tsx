@@ -37,6 +37,7 @@ export default function AppTabs() {
         tabBarLabelStyle: {
           fontSize: 12,
         },
+        sceneContainerStyle: { backgroundColor: 'white' },
       })}
     >
       <Tabs.Screen
