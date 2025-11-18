@@ -5,9 +5,9 @@ import { getToken, clearToken } from './auth';
 // Create a pre-configured axios instance
 export const http = axios.create({
   baseURL: env.API_URL,
-  timeout: 10000,
   headers: {
     Accept: 'application/json',
+    'Content-Type': 'application/json',
   },
 });
 

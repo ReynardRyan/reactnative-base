@@ -10,5 +10,7 @@ export type LoginResponse = {
 };
 
 export async function login(body: LoginBody): Promise<LoginResponse> {
-  return client.post<LoginResponse, LoginBody>('/auth/login', body);
+  const raw = await client.post<any, LoginBody>('/auth/login', body);
+  const token = raw?.token ?? raw?.access_token ?? raw?.data?.token ?? raw?.data?.access_token ?? '';
+  return { token } as LoginResponse;
 }
